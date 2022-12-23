@@ -34,10 +34,17 @@ pyyaml,
 cartopy (for plotting only)
 
 
-
 ## What do these tools do?
 
 These tools are primarily designed to simulate ODYSEA level 2 wind and current swath data. A pre-generated orbit nadir track is provided, along which this code will generate a swath of data. Also provided are templates for co-locating ocean/atmosphere model output to these swath data and functions for generating expected measurement uncertainties.
+
+| ![A single swath of U-direction currents](https://github.com/awineteer/odysea-science-simulator/blob/main/examples/swath_currents.png) | 
+|:--:| 
+| *A single swath of U-direction currents* |
+
+| ![Two orbits of currents, projected on a global map.](https://github.com/awineteer/odysea-science-simulator/blob/main/examples/projected_2_orbits.png) | 
+|:--:| 
+| *Two orbits of currents, projected on a global map.* |
 
 ## What do these tools not do?
 
@@ -56,3 +63,11 @@ While a swath is generated, the more complicated radar pulse and look geometries
 - The /odysim/orbit_files/ folder contains orbit nadir tracks. These files can be specified as desired when calling OdyseaSwath(), but the default is a 590 km sun-synchronous orbit at 4AM/PM.
 - The /odysim/uncertainty_tables/ folder contains a lookup table for expected measurement errors. This is the most in-flux part of the mission, and will be updated as performance is solidified. Check back often!
 
+## Examples:
+
+
+See [Here for basic swath generation.](https://github.com/awineteer/odysea-science-simulator/blob/main/examples/colocating_models_and_uncertainties_to_odysea_orbital_swaths.ipynb)
+
+See [Here to co-locate models, generate uncertainties.](https://github.com/awineteer/odysea-science-simulator/blob/main/examples/colocating_models_and_uncertainties_to_odysea_orbital_swaths.ipynb)
+
+See [Here to generate the logos/plots above.](https://github.com/awineteer/odysea-science-simulator/blob/main/examples/make_globe_maps.ipynb)
