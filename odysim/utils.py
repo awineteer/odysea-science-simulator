@@ -203,7 +203,7 @@ def SDToUVErrors(magnitude,direction,magnitude_error,direction_error):
 
 
 
-def makePlot(lon,lat,data,vmin,vmax,cblabel,colormap,figsize=(20,10),bg=True,gridMe=False,is_err=False):
+def makePlot(lon,lat,data,vmin,vmax,cblabel,colormap,figsize=(20,10),bg=True,gridMe=False,is_err=False,globe=False,cb=True):
 
     
     if gridMe:
@@ -224,8 +224,10 @@ def makePlot(lon,lat,data,vmin,vmax,cblabel,colormap,figsize=(20,10),bg=True,gri
         lat = lat_mesh
     
     fig = plt.figure(figsize=figsize)
-    #ax = plt.subplot(111, projection=ccrs.Orthographic(-65, 15))
-    ax = plt.subplot(111, projection=ccrs.PlateCarree())
+    if globe:
+        ax = plt.subplot(111, projection=ccrs.Orthographic(-65, 15))
+    else:
+        ax = plt.subplot(111, projection=ccrs.PlateCarree())
 
     if bg:
         ax.background_img(name='BM', resolution='low')
@@ -234,7 +236,9 @@ def makePlot(lon,lat,data,vmin,vmax,cblabel,colormap,figsize=(20,10),bg=True,gri
     plt.pcolormesh(lon, lat, data,transform=ccrs.PlateCarree(),vmax=vmax,vmin=vmin,cmap=colormap)
 
     ax.coastlines()
-    plt.colorbar(label=cblabel,orientation='horizontal',fraction=0.046, pad=0.04)
+    
+    if cb:
+        plt.colorbar(label=cblabel,orientation='horizontal',fraction=0.046, pad=0.04)
 
     fig.tight_layout()
 

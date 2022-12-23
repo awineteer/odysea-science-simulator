@@ -300,7 +300,7 @@ class OdyseaErrors:
 
         
         # propagate the speed/dir errors through to U/V errors
-        u_wind_std,v_wind_std = SDToUVErrors(orbit.wind_speed_model.values,orbit.wind_dir_model.values,speed_std,dir_std)
+        u_wind_std,v_wind_std = utils.SDToUVErrors(orbit.wind_speed_model.values,orbit.wind_dir_model.values,speed_std,dir_std)
 
         u_wind_error = np.random.normal(scale=u_wind_std)
         v_wind_error = np.random.normal(scale=v_wind_std)
@@ -315,10 +315,10 @@ class OdyseaErrors:
         wind_speed_noisy = orbit.wind_speed_model.values + speed_errors
         wind_dir_noisy = orbit.wind_dir_model.values + dir_errors
 
-        stress_mag_noisy = windToStress(wind_speed_noisy)
-        stress_u_noisy,stress_v_noisy = windToStress(wind_speed_noisy,wind_dir_noisy)
+        stress_mag_noisy = utils.windToStress(wind_speed_noisy)
+        stress_u_noisy,stress_v_noisy = utils.windToStress(wind_speed_noisy,wind_dir_noisy)
 
-        stress_mag = windToStress(orbit.wind_speed_model.values)
+        stress_mag = utils.windToStress(orbit.wind_speed_model.values)
 
         stress_mag_error = stress_mag - stress_mag_noisy
         u_stress_error = orbit.tx_model.values - stress_u_noisy

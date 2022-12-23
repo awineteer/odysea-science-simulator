@@ -4,7 +4,10 @@ import pandas as pd
 import yaml
 from scipy.interpolate import UnivariateSpline
 import datetime
-  
+from pathlib import Path
+import os
+import importlib.resources as import_resources
+
 from odysim.coordinates import *
 from odysim import utils
 
@@ -112,10 +115,8 @@ class WGS84:
 
 class OdyseaSwath:
     
-    def __init__(self,orbit_fname='/orbits/orbit_out_2020_2023.npz',config_fname='wacm_sampling_config.py'):
-        
-        #TODO: self.loadSampling()
-        
+    def __init__(self,orbit_fname='orbit_out_2020_2023_height590km.npz',config_fname='wacm_sampling_config.py'):
+                
         """
         Initialize an OdyseaSwath object. Eventaully, this will contain configuration etc. TODO..
         
@@ -126,9 +127,22 @@ class OdyseaSwath:
            OdyseaSwath object
 
         """
+                
+        if orbit_fname == 'orbit_out_2020_2023_height590km.npz': 
+            # the default fname needs the relative path to the installed dir
+            from odysim import orbit_files
+            orbit_fname = os.path.join(import_resources.files(orbit_files),orbit_fname)
+            
+        if config_fname == 'wacm_sampling_config.py': 
+            # the default fname needs the relative path to the installed dir
+            import odysim
+            config_fname = os.path.join(import_resources.files(odysim),config_fname)
+            
         
-        self.loadOrbitXYZ(orbit_fname)
+            
+        self.loadOrbitXYZ(fn=orbit_fname)
         self.config_fname=config_fname
+    
     
     def getOrbitSwath(self,orbit_x,orbit_y,orbit_z,orbit_time_stamp,orbit_s,write=False):
 
