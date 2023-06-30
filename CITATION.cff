@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: "ODYSEA Science Simulator"
+message: Please cite this code using the metadata below.
+authors:
+  - given-names: Alexander
+    family-names: Wineteer
+    affiliation: Jet Propulsion Laboratory
+    orcid: https://orcid.org/0000-0002-2492-5492
+  - given-names: Hector
+    family-names: Torres
+    affiliation: Jet Propulsion Laboratory
+    orcid: https://orcid.org/0000-0003-2098-8012
+doi: 10.5281/zenodo.8067124 
+date-released: 2023-06-01
+repository-code: https://github.com/awineteer/odysea-science-simulator
+license: Apache-2.0
