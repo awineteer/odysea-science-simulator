@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import yaml
 from scipy.interpolate import UnivariateSpline
+import scipy
 import datetime
 from pathlib import Path
 import os
@@ -12,10 +13,13 @@ from odysim.coordinates import *
 from odysim import utils
 
     
-def splineFactory(x,y,smoothing=.1):
-    spl = UnivariateSpline(x, y)
-    spl.set_smoothing_factor(.1)
+def splineFactory(x,y,k=3,smoothing=None):
+    spl = UnivariateSpline(x, y, k=k)
+    if smoothing is not None:
+        spl.set_smoothing_factor(smoothing)
+        
     return spl
+
 
 
 def getBearing(latitude,longitude):
@@ -28,7 +32,7 @@ def getBearing(latitude,longitude):
     Y[d::] = np.cos(latitude[0:-d]) * np.sin(latitude[d::]) - np.sin(latitude[0:-d]) * np.cos(latitude[d::]) * np.cos(longitude[d::]-longitude[0:-d])
 
     t = np.arctan2(X,Y)
-
+    
     return t
 
 def ecef_to_llh(x,y,z):
@@ -115,7 +119,7 @@ class WGS84:
 
 class OdyseaSwath:
     
-    def __init__(self,orbit_fname='orbit_out_2020_2023_height590km.npz',config_fname='wacm_sampling_config.py'):
+    def __init__(self,orbit_fname='orbit_out_590km_2020_2023.npz',config_fname='wacm_sampling_config.py'):
                 
         """
         Initialize an OdyseaSwath object. Eventaully, this will contain configuration etc. TODO..
@@ -128,10 +132,17 @@ class OdyseaSwath:
 
         """
                 
-        if orbit_fname == 'orbit_out_2020_2023_height590km.npz': 
+        if orbit_fname == 'orbit_out_590km_2020_2023.npz': 
             # the default fname needs the relative path to the installed dir
             from odysim import orbit_files
-            orbit_fname = os.path.join(import_resources.files(orbit_files),orbit_fname)
+
+            try:
+                orbit_fname = os.path.join(import_resources.files(orbit_files),orbit_fname)
+            except:
+                # for some reason, sometimes import_resources retruns a mutliplexedpath instead of a string!
+                orbit_path = str(import_resources.files(orbit_files)).split("'")[1]
+                orbit_fname = os.path.join(orbit_path,orbit_fname)
+
             
         if config_fname == 'wacm_sampling_config.py': 
             # the default fname needs the relative path to the installed dir
@@ -163,13 +174,17 @@ class OdyseaSwath:
 
         h = np.zeros(np.shape(c_bins))
 
-        s_pegs = np.arange(0,cfg['N_ALONG_TRACK'])*cfg['IN_SWATH_RESOLUTION'] # 8000 bins, 5km each.
-
+        Re = 6378 # km
+        f = (Re+cfg['ORBIT_HEIGHT'])/Re # factor to convert resolution on the ground track to resolution of the satellite orbit track
+        #s_pegs = np.arange(0,f*cfg['N_ALONG_TRACK'])*cfg['IN_SWATH_RESOLUTION'] # 8000 bins, 5km each.
+        
+        s_pegs = np.arange(np.nanmin(coarse_s)+.0001,np.nanmax(coarse_s)-.0001,cfg['IN_SWATH_RESOLUTION'] * f)
+        
         ns,nc = len(s_pegs),len(c_bins)
 
 
         platform_s = coarse_s
-        platform_s = platform_s - np.nanmin(platform_s)
+        #platform_s = platform_s - np.nanmin(platform_s)
 
         #print(np.nanmax(platform_s))
         
@@ -298,7 +313,7 @@ class OdyseaSwath:
 
         return ds
     
-    def loadOrbitXYZ(self,fn='orbit_out_2020_2023_height590km.npz'):
+    def loadOrbitXYZ(self,fn='orbit_out_590km_2020_2023.npz'):
         
         orbit_out = np.load(fn)
         
@@ -329,11 +344,12 @@ class OdyseaSwath:
         start_time = start_time.timestamp()
         end_time = end_time.timestamp()
 
+        
         start_index = np.where((self.time_stamp_vector_coarse > start_time) & (self.time_stamp_vector_coarse < end_time))[0][0]
         end_index = np.where((self.time_stamp_vector_coarse > start_time) & (self.time_stamp_vector_coarse < end_time))[0][-1]
         
         valid_orbit_cut_points = self.orbit_cut_points[(self.orbit_cut_points > start_index) & (self.orbit_cut_points < end_index)]
-        
+
         for idx_orbit,orbit_start in enumerate(valid_orbit_cut_points):
 
             start_idx = orbit_start
@@ -383,6 +399,7 @@ class OdyseaSwath:
         
         bearing = utils.getBearing(platform_latitude*np.pi/180,platform_longitude*np.pi/180)
         bearing = utils.splineFactory(orbit.along_track.values,bearing)(orbit.along_track.values)
+        bearing = scipy.signal.medfilt(bearing,9) # 9 element median to remove single-value outliers.
 
         azimuth_fore =  utils.normalizeTo180((encoder_fore + bearing[:,np.newaxis]))
         azimuth_aft =  utils.normalizeTo180((encoder_aft + bearing[:,np.newaxis]))

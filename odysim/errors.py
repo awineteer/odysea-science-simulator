@@ -10,7 +10,7 @@ from odysim import utils
 class OdyseaErrors:
     
 
-    def __init__(self,lut_fn='../uncertainty_tables/odysea_sigma_vr_lut_height590km_look52deg_swath1672km.npz'):
+    def __init__(self,type='cbe'):
         
         """
         Initialize an OdyseaErrors object. This contains various meshgrids and loads an error interpolator.
@@ -24,6 +24,11 @@ class OdyseaErrors:
 
         """
 
+        if type=='mev':
+            lut_fn='../odysim/uncertainty_tables/odysea_sigma_vr_lut_height590km_look49deg_swath1500km_08_2_2024_MEV.npz'
+        else:
+            lut_fn='../odysim/uncertainty_tables/odysea_sigma_vr_lut_height590km_look49deg_swath1500km_08_2_2024_CBE.npz'
+        
         # These ranges are defined by the size of the vradial_lut at creation.
         wind_dir_range = np.arange(-195,195,5)  
         wind_speed_range = np.arange(0,20,.1)

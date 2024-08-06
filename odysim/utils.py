@@ -211,8 +211,8 @@ def makePlot(lon,lat,data,vmin,vmax,cblabel,colormap,figsize=(20,10),bg=True,gri
         mask = np.isfinite(lon+lat+data)
 
         
-        lon_lin = np.arange(-180,180,.2)
-        lat_lin = np.arange(-90,90,.2)
+        lon_lin = np.arange(-180,180,0.25)
+        lat_lin = np.arange(-90,90,0.25)
 
         lon_mesh,lat_mesh = np.meshgrid((lon_lin[1::]+lon_lin[0:-1])/2,(lat_lin[1::]+lat_lin[0:-1])/2)
         
