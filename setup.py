@@ -11,5 +11,5 @@ setup(
     package_dir={'odysea-simulator': 'odysim'},
     packages=[
         'odysim'],
-    package_data={'odysim': ['orbit_files/*.npz', 'uncertainty_tables/*.npz']}
+    package_data={'odysim': ['orbit_files/*.npz', 'uncertainty_tables/*.npz','cartopy_files/*']}
 )
