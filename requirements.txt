@@ -1,0 +1,8 @@
+cartopy
+matplotlib
+numpy
+pandas
+pytest
+scipy
+xarray
+pyyaml

@@ -100,15 +100,10 @@ def localSTD(inpt,sigma):
     
 
 def normalizeTo180(angle):
-    # note this strange logic was originally to use numba JIT
-    for idx,ang in np.ndenumerate(angle):
-    
-        ang =  ang % 360
-        ang = (ang + 360) % 360
-        if ang > 180:
-            ang -= 360
-        angle[idx] = ang
-        
+    angle = np.array(angle)
+    angle = angle % 360
+    angle = (angle + 360) % 360
+    angle[angle > 180] -= 360
     return angle
 
 
